@@ -3,6 +3,7 @@ package com.mapl.tinkoff;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -19,19 +20,26 @@ import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity implements Postman {
     private ArrayList<CardInfo> arrayList = new ArrayList();
-    RecyclerView recyclerView;
+    private SwipeRefreshLayout swipeContainer;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        LoadInfo loadInfo = new LoadInfo();
-        loadInfo.execute();
     }
 
     private void initView() {
         recyclerView = findViewById(R.id.recyclerView);
+        swipeContainer = findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                LoadInfo loadInfo = new LoadInfo();
+                loadInfo.execute();
+            }
+        });
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -55,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements Postman {
             RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(arrayList, MainActivity.this);
             recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setAdapter(recyclerViewAdapter);
+            swipeContainer.setRefreshing(false);
         }
     }
 
