@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Postman {
     private ArrayList<CardInfo> arrayList = new ArrayList();
     RecyclerView recyclerView;
 
@@ -38,7 +39,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(String... strings) {
-            JSONObject jsonObject = DataLoader.getJSON();
+            DataLoader dataLoader = new DataLoader("https://api.tinkoff.ru/v1/news");
+            JSONObject jsonObject = dataLoader.getJSON();
             if (jsonObject != null)
                 arrayList = getJSONArray(jsonObject);
             else
@@ -50,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this);
-            RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(arrayList);
+            RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(arrayList, MainActivity.this);
             recyclerView.setLayoutManager(linearLayoutManager);
             recyclerView.setAdapter(recyclerViewAdapter);
         }
@@ -63,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 arrayList.add(new CardInfo(
-                        jsonArray.getJSONObject(i).getLong("id"),
+                        jsonArray.getJSONObject(i).getInt("id"),
                         jsonArray.getJSONObject(i).getJSONObject("publicationDate").getLong("milliseconds"),
                         jsonArray.getJSONObject(i).getString("text")));
             }
@@ -79,5 +81,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         return arrayList;
+    }
+
+    @Override
+    public void getInfo(String id, String date, String text) {
+        Intent intent = new Intent(MainActivity.this, InformingActivity.class);
+        intent.putExtra("ID", id);
+        intent.putExtra("DATE", date);
+        intent.putExtra("TEXT", text);
+        startActivity(intent);
     }
 }

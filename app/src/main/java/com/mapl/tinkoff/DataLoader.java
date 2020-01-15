@@ -1,7 +1,5 @@
 package com.mapl.tinkoff;
 
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,9 +10,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class DataLoader {
-    private static final String API_URL = "https://api.tinkoff.ru/v1/news";
+    String API_URL;
 
-    public static JSONObject getJSON() {
+    public DataLoader(String API_URL) {
+        this.API_URL = API_URL;
+    }
+
+    public JSONObject getJSON() {
         try {
             URL url = new URL(API_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
