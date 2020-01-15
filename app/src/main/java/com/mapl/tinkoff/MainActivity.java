@@ -8,9 +8,13 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<CardInfo> arrayList = new ArrayList();
@@ -54,8 +58,25 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<CardInfo> getJSONArray(JSONObject jsonObject) {
         ArrayList<CardInfo> arrayList = new ArrayList();
+        try {
+            JSONArray jsonArray = jsonObject.getJSONArray("payload");
 
-        arrayList.add(new CardInfo(100, 100, "текст"));
+            for (int i = 0; i < jsonArray.length(); i++) {
+                arrayList.add(new CardInfo(
+                        jsonArray.getJSONObject(i).getLong("id"),
+                        jsonArray.getJSONObject(i).getJSONObject("publicationDate").getLong("milliseconds"),
+                        jsonArray.getJSONObject(i).getString("text")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Collections.sort(arrayList, new Comparator<CardInfo>() {
+            @Override
+            public int compare(CardInfo o1, CardInfo o2) {
+                return o1.getMilliseconds() > o2.getMilliseconds() ? -1 : 1;
+            }
+        });
 
         return arrayList;
     }

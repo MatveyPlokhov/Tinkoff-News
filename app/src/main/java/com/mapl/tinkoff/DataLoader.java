@@ -1,6 +1,7 @@
 package com.mapl.tinkoff;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,7 +29,14 @@ public class DataLoader {
 
             reader.close();
             connection.disconnect();
-            return new JSONObject(rawData.toString());
+
+            JSONObject jsonObject = new JSONObject(rawData.toString());
+
+            if (jsonObject.getString("resultCode").equals("OK")) {
+                return jsonObject;
+            } else {
+                return null;
+            }
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }

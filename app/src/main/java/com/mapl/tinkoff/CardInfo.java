@@ -10,4 +10,8 @@ public class CardInfo {
         this.milliseconds = milliseconds;
         this.text = text;
     }
+
+    public long getMilliseconds() {
+        return milliseconds;
+    }
 }
